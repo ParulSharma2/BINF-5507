@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.linear_model import LogisticRegression, ElasticNet
+from sklearn.metrics import r2_score, accuracy_score, classification_report
 
 # 1. Impute Missing Values
 def impute_missing_values(data, strategy='mean'):
@@ -88,7 +88,7 @@ def remove_redundant_features(data, threshold=0.9):
     return data.drop(columns=to_drop, errors='ignore')
 
 # ---------------------------------------------------
-
+# 4. Simple Model   
 def simple_model(input_data, split_data=True, scale_data=False, print_report=False, target_col='target'):
     """
     A simple logistic regression model for target classification.
@@ -133,25 +133,70 @@ def simple_model(input_data, split_data=True, scale_data=False, print_report=Fal
             features.drop(columns=[col], inplace=True)
             features = pd.concat([features, dummies], axis=1)
 
-    # Split the dataset
+    # Train-Test Split
+    stratify_option = target if target_col == 'num' else None
     X_train, X_test, y_train, y_test = train_test_split(
-        features, target, test_size=0.2, stratify=target, random_state=42
+        features, target, test_size=0.2, stratify=stratify_option, random_state=42
     )
 
-    # Apply scaling if requested
+    # Feature Scaling if Requested
     if scale_data:
-        X_train = normalize_data(X_train, method='standard')
-        X_test = normalize_data(X_test, method='standard')
+        X_train = normalize_data(X_train)
+        X_test = normalize_data(X_test)
 
-    # Fit logistic regression model
-    model = LogisticRegression(random_state=42, max_iter=100, solver='liblinear')
+    # Model Initialization
+    if target_col == 'num':
+        model = LogisticRegression(max_iter=1000, random_state=42)
+    elif target_col == 'chol':
+        model = ElasticNet(random_state=42)
+    else:
+        raise ValueError("Unsupported target column. Use 'num' for classification or 'chol' for regression.")
+
+    # Model Training & Prediction
     model.fit(X_train, y_train)
-
-    # Predict and evaluate
     y_pred = model.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
 
-    print(f"\nModel Accuracy: {accuracy:.4f}")
-    if print_report:
-        print("\nClassification Report:")
-        print(classification_report(y_test, y_pred))
+    # Model Evaluation
+    if target_col == 'num':
+        acc = accuracy_score(y_test, y_pred)
+        print(f"\nClassification Accuracy: {acc:.4f}")
+        if print_report:
+            print("\nClassification Report:")
+            print(classification_report(y_test, y_pred))
+    elif target_col == 'chol':
+        r2 = r2_score(y_test, y_pred)
+        print(f"\nRegression R² Score: {r2:.4f}")
+
+# Function 6: Plot ROC and Precision-Recall Curves
+def plot_roc_pr(model, X_test, y_test, model_name='Model'):
+    """
+    Plots ROC and Precision-Recall Curves for a classification model.
+    :param model: Trained classification model with predict_proba method
+    :param X_test: Features of the test set
+    :param y_test: True labels of the test set
+    :param model_name: str, name of the model for plot titles
+    """
+    from sklearn.metrics import roc_curve, roc_auc_score, precision_recall_curve, average_precision_score
+    import matplotlib.pyplot as plt
+
+    y_proba = model.predict_proba(X_test)[:, 1]
+
+    fpr, tpr, _ = roc_curve(y_test, y_proba)
+    auc_score = roc_auc_score(y_test, y_proba)
+    plt.figure()
+    plt.plot(fpr, tpr, label=f'{model_name} - AUROC = {auc_score:.4f}')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title(f'ROC Curve - {model_name}')
+    plt.legend()
+    plt.show()
+
+    precision, recall, _ = precision_recall_curve(y_test, y_proba)
+    pr_auc = average_precision_score(y_test, y_proba)
+    plt.figure()
+    plt.plot(recall, precision, label=f'{model_name} - AUPRC = {pr_auc:.4f}')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title(f'Precision-Recall Curve - {model_name}')
+    plt.legend()
+    plt.show()
