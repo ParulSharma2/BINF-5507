@@ -118,7 +118,7 @@ Applied ElasticNet for predicting cholesterol levels.
 ## References:
 
 - **Lecture Notes:** Data Preprocessing, Supervised Learning Models, and Evaluation (BINF 5507 - Caryn Geady, May 2025).
-- **Python Libraries:** `pandas`, `numpy`, `scikit-learn`, `matplotlib`, `seaborn`, `warnings`.
+- **Python Libraries:** pandas, numpy, scikit-learn, matplotlib, seaborn, warnings.
 - **Dataset:** UCI Machine Learning Repository — Heart Disease Dataset.
 
 ---
