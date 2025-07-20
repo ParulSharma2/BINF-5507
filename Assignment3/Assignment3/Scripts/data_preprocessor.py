@@ -8,9 +8,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_samples, silhouette_score
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-# -----------------------------
+# ----------------------------
 # Data Generation Functions
-# -----------------------------
+# ----------------------------
 
 def generate_moons(n_samples=300, noise=0.05):
     """
