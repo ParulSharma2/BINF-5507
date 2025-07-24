@@ -63,6 +63,7 @@ In real-world clinical applications (e.g., gene expression or imaging), such dat
 # Dataset
 Synthetic stretched blob data generated using make_blobs and linear transformation with np.dot().
 # References
-•	Bishop, C. M. (2006). Pattern Recognition and Machine Learning. Springer.
-•	scikit-learn documentation: https://scikit-learn.org/
-•	Lecture 5: Unsupervised Learning I — Clustering (BINF-5507, Winter 2025)
+- Neal, R. M. (2007). Pattern Recognition and Machine Learning, by Christopher M. Bishop. Technometrics, 49. http://asq.org/technometrics/2007/08/pattern-recognition-and-machine-learning.pdf
+- Gaussian Mixture Model Ellipsoids. (n.d.). Scikit-learn. https://scikit-learn.org/stable/auto_examples/mixture/plot_gmm.html
+- Lecture 5: Unsupervised Learning I — Clustering (BINF-5507, Winter 2025)
+
