@@ -11,7 +11,7 @@ This module contains helper functions for the Capstone Project:
 
 Used with main.py to compare KMeans vs Gaussian Mixture Models (GMM).
 """
-
+344
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
